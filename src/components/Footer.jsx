@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 const Footer = () => {
   return (
-    <footer className="bg-[#0C1E1D] py-10">
+    <footer className=" bg-[#0C1E1D] py-10">
       <div className="w-[90%] md:space-y-0 space-y-5 mx-auto md:flex justify-between items-center">
         <div className="block font-[600] ">
           <h1 className="text-[26px] py-1 text-white">AgriSmart</h1>

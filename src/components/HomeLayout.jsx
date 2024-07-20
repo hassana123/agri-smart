@@ -3,9 +3,9 @@ import Navigation from './Navigation'
 import Footer from './Footer'
 const HomeLayout = ({children}) => {
   return (
-    <div className='font-poppins'>
+    <div className='font-poppins relative flex flex-col min-h-screen'>
         <Navigation/>
-        <main >
+        <main className='flex-grow' >
             {children}
         </main>
         <Footer/>
