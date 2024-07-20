@@ -23,20 +23,39 @@ const Navigation = () => {
       <div
         className={`${
           isOpen ? 'block' : 'hidden'
-        } absolute md:static top-[70px] left-0 w-full md:w-auto md:flex space-x-0 md:space-x-10 bg-white md:bg-transparent shadow-md md:shadow-none transition-all duration-500 ease-in-out`}
+        } absolute md:static top-[70px] py-10 z-5 left-0 w-full md:w-auto md:flex space-x-0 md:space-x-10 bg-white md:bg-transparent shadow-lg md:shadow-none transition-all md:py-0 duration-500 ease-in-out`}
       >
-        <NavLink to="/" className='block md:inline-block p-4 md:p-0'>Home</NavLink>
-        <NavLink to="/about" className='block md:inline-block p-4 md:p-0'>About</NavLink>
-        <NavLink to="/upload" className='block md:inline-block p-4 md:p-0'>Upload</NavLink>
-        <NavLink to="/tips" className='block md:inline-block p-4 md:p-0'>Tips</NavLink>
+        <NavLink   style={({ isActive }) => {
+            return isActive ? { borderBottom: "1px solid #01A8A1" } : {};
+          }} to="/" className='block md:inline-block p-4 md:p-0'>Home</NavLink>
+        <NavLink  style={({ isActive }) => {
+            return isActive ? { borderBottom: "1px solid #01A8A1" } : {};
+          }} to="/about" className='block md:inline-block p-4 md:p-0'>About</NavLink>
+        <NavLink  style={({ isActive }) => {
+            return isActive ? { borderBottom: "1px solid #01A8A1" } : {};
+          }} to="/upload" className='block md:inline-block p-4 md:p-0'>Upload</NavLink>
+        <NavLink  style={({ isActive }) => {
+            return isActive ? { borderBottom: "1px solid #01A8A1" } : {};
+          }} to="/tips" className='block md:inline-block p-4 md:p-0'>Tips</NavLink>
+       <NavLink  style={({ isActive }) => {
+            return isActive ? { borderBottom: "1px solid #01A8A1" } : {};
+          }}
+          to="/login"
+          className="md:hidden hover:bg-[#01A8A1] my-5 inline-block transition ease-in-out hover:translate-y-1 hover:scale-110 duration-400 hover:text-white border border-[#01A8A1] rounded-md py-3 px-10 relative overflow-hidden"
+        >
+
+          <span className="relative ">login / Register</span>
+        </NavLink>
       </div>
       <div className='mt-4 md:mt-0 hidden md:block'>
-        <NavLink
-          to="#subscribe"
-          className="hover:bg-[#01A8A1] transition ease-in-out hover:translate-y-1 hover:scale-110 duration-400 hover:text-white border border-[#01A8A1] rounded-md py-3 px-5 relative overflow-hidden"
+        <NavLink  style={({ isActive }) => {
+            return isActive ? { borderBottom: "1px solid #01A8A1" } : {};
+          }}
+          to="/login"
+          className="hover:bg-[#01A8A1] transition ease-in-out hover:translate-y-1 hover:scale-110 duration-400 hover:text-white border border-[#01A8A1] rounded-md py-3 px-10 relative overflow-hidden"
         >
           <span className="absolute inset-0 w-full h-full bg-[#01A8A1] transform scale-x-0 origin-left transition-transform duration-500 ease-out"></span>
-          <span className="relative z-10">Subscribe To Newsletter</span>
+          <span className="relative z-10">login / Register</span>
         </NavLink>
       </div>
     </nav>

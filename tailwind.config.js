@@ -13,6 +13,8 @@ export default {
       },
       fontFamily:{
         poppins: ['Poppins', 'sans-serif'],
+        mulish:["Mulish", "sans-serif"],
+        roboto:[ "Roboto", "sans-serif"]
       }
     },
   },
