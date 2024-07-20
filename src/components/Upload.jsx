@@ -57,7 +57,7 @@ const Upload = () => {
     reader.readAsDataURL(image);
   };
 
-  // Generate download report as text file
+  // download report as text file
   const downloadReport = () => {
     const blob = new Blob([`Status: ${result.status}\nDisease: ${result.disease}\nPlant: ${result.plant}\nRemedy: ${result.remedy}`], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -68,7 +68,7 @@ const Upload = () => {
     URL.revokeObjectURL(url);
   };
 
-  // Generate URL for additional tips based on the disease
+  // URL for additional tips based on the disease
   const getTipsUrl = (disease) => {
     if (disease) {
       return `https://www.apsnet.org/edcenter/disimpactmngmnt/topc/EpidemiologyTemporal/Pages/ManagementStrategies.aspx`; // Replace with actual URLs
