@@ -11,9 +11,10 @@ const Upload = () => {
   const [diagnosing, setDiagnosing] = useState(false);
 
   const handleFileChange = async (e) => {
+    setResult(null)
     setUploading(true);
     const file = e.target.files[0];
-    setImage(file);
+    setImage(file)
     if (file) {
       try {
         const storageRef = ref(storage, `photos/${file.name}`);
@@ -30,6 +31,7 @@ const Upload = () => {
   };
 
   const handleImageDiagnose = async (e) => {
+    setResult(null)
     e.preventDefault();
     setDiagnosing(true);
     const reader = new FileReader();
