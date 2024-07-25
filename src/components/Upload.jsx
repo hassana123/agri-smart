@@ -166,7 +166,7 @@ const Upload = () => {
             </button>
             <a
               href={getTipsUrl(result.disease)}
-              className="px-6 py-2 bg-white text-primary flex items-center  rounded-md border border-primary text-white rounded-md shadow-md"
+              className="px-6 py-2 bg-white text-primary flex items-center  rounded-md border border-primary rounded-md shadow-md"
               target="_blank"
               rel="noopener noreferrer"
             >

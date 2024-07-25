@@ -51,11 +51,11 @@ const Navigation = () => {
         <NavLink  style={({ isActive }) => {
             return isActive ? { borderBottom: "1px solid #01A8A1" } : {};
           }}
-          to="/login"
+          to="#subscribe"
           className="hover:bg-[#01A8A1] transition ease-in-out hover:translate-y-1 hover:scale-110 duration-400 hover:text-white border border-[#01A8A1] rounded-md py-3 px-10 relative overflow-hidden"
         >
           <span className="absolute inset-0 w-full h-full bg-[#01A8A1] transform scale-x-0 origin-left transition-transform duration-500 ease-out"></span>
-          <span className="relative z-10">login / Register</span>
+          <span className="relative z-10">Subscribe</span>
         </NavLink>
       </div>
     </nav>

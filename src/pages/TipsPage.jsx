@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import HomeLayout from '../components/HomeLayout';
-import { tips } from '../server/tips';
+import { tips } from '../../server/tips';
 
 const TipsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
