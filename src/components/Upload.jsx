@@ -4,7 +4,7 @@ import { storage } from "../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import diseasesData from "../../server/diseasesData";
 import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
+//import html2canvas from "html2canvas";
 
 
 const Upload = () => {
