@@ -10,6 +10,7 @@ const AIChatbot = ({ diseases }) => {
     setLoading(true);
     const openai = new OpenAI({
       apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+      dangerouslyAllowBrowser: true,
     });
 
     const prompt = diseases
@@ -18,7 +19,7 @@ const AIChatbot = ({ diseases }) => {
 
     try {
       const result = await openai.completions.create({
-        model: 'text-davinci-003',
+        model: 'gpt-3.5-turbo',
         prompt: prompt,
         max_tokens: 150,
       });
