@@ -38,13 +38,13 @@ const Navigation = () => {
             return isActive ? { borderBottom: "1px solid #01A8A1" } : {};
           }} to="/tips" className='block md:inline-block p-4 md:p-0'>Tips</NavLink>
        <NavLink  style={({ isActive }) => {
-            return isActive ? { borderBottom: "1px solid #01A8A1" } : {};
+            return isActive ? { borderBottom: "1px  solid #01A8A1" } : {};
           }}
-          to="/login"
+          to="#subscribe"
           className="md:hidden hover:bg-[#01A8A1] my-5 inline-block transition ease-in-out hover:translate-y-1 hover:scale-110 duration-400 hover:text-white border border-[#01A8A1] rounded-md py-3 px-10 relative overflow-hidden"
         >
 
-          <span className="relative ">login / Register</span>
+          <span className="relative ">Subscribe</span>
         </NavLink>
       </div>
       <div className='mt-4 md:mt-0 hidden md:block'>

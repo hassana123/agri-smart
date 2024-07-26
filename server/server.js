@@ -1,82 +1,71 @@
-// import express from 'express';
-// import bodyParser from 'body-parser';
-// import cors from 'cors';
-// import AfricasTalking from "africastalking"
 
-// const app = express();
-// const port = 5000;
+// import AfricasTalking from "africastalking";
+// import { config } from "dotenv";
 
-// app.use(cors());
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({extended:false}))
+// config()
 
-// const africastalking = AfricasTalking({
-//   apiKey: "atsk_a470264bdcd4c334596316040b66135325ed5ff325893cc63fa3f63fe961566fe53530a4",
-//   username: "sandbox",
+
+// const  africastalking = AfricasTalking({
+//   apiKey:process.env.AFRICASTALKING_API_KEY,
+//   username: process.env.AFRICASTALKING_USERNAME,
 // });
 
-
-// async function sendSMS(res){
-//   try {
-//     const result = await africastalking.SMS.send({
-//       to:"+23480606186",
-//       message:"hello",
-//       from:"agriSmart"
-//     })
-//   } catch (error) {
-//     console.log(error);
-//   }
+// try {
+//   const result = await africastalking.SMS.send({
+//     to:"+2348060618637",
+//     message:"how are u",
+//     from:process.env.SENDER_ID,
+//   })
+//   console.log(result)
+// } catch (error) {
+//   console.error(error)
 // }
 
-// app.listen(port, () => {
-//   console.log(`Server running on port ${port}`);
-// });
- // server.js
-const express = require('express');
-const africastalking = require('africastalking');
-const cors = require('cors');
-require('dotenv').config();
+import express from 'express';
+import bodyParser from 'body-parser';
+import AfricasTalking from 'africastalking';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const app = express();
 const port = process.env.PORT || 3000;
 
-const at = africastalking({
-  apiKey:"atsk_662258a888b35933b57a8da76ff11e060f54ee876bfdbe63faecf55cea4685a8366c4ca2",
-  username: "agriSmart"
+const africasTalking = AfricasTalking({
+  apiKey: process.env.AFRICASTALKING_API_KEY,
+  username: process.env.AFRICASTALKING_USERNAME,
 });
 
-const sms = at.SMS;
+app.use(bodyParser.json());
 
-// Middleware to parse JSON requests
-app.use(express.json());
-app.use(cors());
-
-
-// Define a route
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
+// Middleware for handling CORS
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
 });
-app.get('/test', (req, res) => {
-  res.send('Test route is working!');
-});
-
 
 app.post('/send-sms', async (req, res) => {
   const { to, message } = req.body;
+
   try {
-    const response = await sms.send({
+    const result = await africasTalking.SMS.send({
       to,
       message,
-      from: 'agriSmart',
+      from: process.env.SENDER_ID,
     });
-
-    res.json({ status: 'success', data: response });
-    console.log(response);
+    res.status(200).json({ status: 'success', data: result });
+    console.log("success", res.status);
   } catch (error) {
-    console.error('Error sending SMS:', error.message ,error);
+    console.log("error:",error);
     res.status(500).json({ status: 'error', message: error.message });
   }
 });
-// Start the server
+
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server running on port ${port}`);
 });

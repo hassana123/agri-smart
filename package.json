@@ -13,6 +13,7 @@
     "africastalking": "^0.7.0",
     "axios": "^1.7.2",
     "clarifai": "^2.9.1",
+    "cors": "^2.8.5",
     "firebase": "^10.12.3",
     "global": "^4.4.0",
     "react": "^18.3.1",

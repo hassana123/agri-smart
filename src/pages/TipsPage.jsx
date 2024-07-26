@@ -21,7 +21,7 @@ const TipsPage = () => {
 
   return (
     <HomeLayout>
-      <section className='text-[#111111] mx-auto space-y-8 text-[16px] w-[90%] bg-[#F8F8F8] px-5 py-10 md:px-20 my-20 rounded-lg shadow-lg'>
+      <section className='text-[#111111] mx-auto space-y-8 text-[16px] w-[90%] bg-[#F8F8F8]  py-10 md:px-5 my-20 rounded-lg shadow-lg'>
         <h1 className='text-[22px] md:text-[32px] text-primary font-bold'>Agricultural Tips</h1>
         <ul className='space-y-6'>
           {currentTips.map((tip, index) => (
@@ -35,7 +35,7 @@ const TipsPage = () => {
             </li>
           ))}
         </ul>
-        <div className='flex justify-center items-center space-x-2 mt-8'>
+        <div className='flex justify-center items-center  space-x-2 mt-8'>
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             className={`px-4 py-2 rounded-md border transition-colors duration-300 ${currentPage === 1 ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-white text-primary border-primary'}`}

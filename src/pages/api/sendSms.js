@@ -1,39 +1,28 @@
-import africastalking from 'africastalking';
+// import AfricasTalking from 'africastalking';
+// import { config } from 'dotenv';
 
-const credentials = {
-  apiKey: 'atsk_a470264bdcd4c334596316040b66135325ed5ff325893cc63fa3f63fe961566fe53530a4', 
-  username: 'sandbox', 
-};
+// config();
 
-const at = africastalking(credentials);
-const sms = at.SMS;
+// const africasTalking = AfricasTalking({
+//   apiKey: process.env.AFRICASTALKING_API_KEY,
+//   username: process.env.AFRICASTALKING_USERNAME,
+// });
 
-export default async function handler(req, res) {
-  if (req.method === 'POST') {
-    const { phoneNumber } = req.body;
+// export default async function handler(req, res) {
+//   if (req.method === 'POST') {
+//     const { to, message } = req.body;
 
-
-  // Validate Nigerian phone number
-  const phoneRegex = /^((^234)[0–9]{10})/;
-  if (!phoneRegex.test(phoneNumber)) {
-    return res.status(400).json({ error: 'Invalid Nigerian phone number' });
-  }
-
-  const message = 'Welcome to AgriSmart! Thanks for subscribing. Here\'s a farming tip: Ensure regular watering of your crops for optimal growth.';
-
-  try {
-    const response = await sms.send({
-      to: [phoneNumber],
-      message,
-      from:"08102920194",
-    });
-
-    return res.status(200).json({ success: 'Message sent successfully', response });
-  } catch (error) {
-    return res.status(500).json({ error: 'Failed to send message', details: error.message });
-  }
-} else {
-  res.setHeader('Allow', ['POST']);
-  res.status(405).end(`Method ${req.method} Not Allowed`);
-}
-}
+//     try {
+//       const result = await africasTalking.SMS.send({
+//         to,
+//         message,
+//         from: process.env.SENDER_ID,
+//       });
+//       res.status(200).json({ status: 'success', data: result });
+//     } catch (error) {
+//       // res.status(500).json({ status: 'error', message: error.message });
+//     }
+//   } else {
+//     res.status(405).json({ message: 'Method not allowed' });
+//   }
+// }
