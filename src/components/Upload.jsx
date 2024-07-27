@@ -1,20 +1,25 @@
 import React, { useState } from "react";
 import axios from "axios";
+import axiosRetry from "axios-retry";
+axiosRetry(axios, { retries: 3, retryDelay: axiosRetry.exponentialDelay });
 import { storage } from "../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import diseasesData from "../../server/diseasesData";
 import { jsPDF } from "jspdf";
 //import html2canvas from "html2canvas";
-
-
+axiosRetry(axios, { retries: 3, retryDelay: axiosRetry.exponentialDelay });
 const Upload = () => {
   const [image, setImage] = useState(null);
   const [imageURL, setImageURL] = useState(null);
   const [result, setResult] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [diagnosing, setDiagnosing] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [sendingSMS, setSendingSMS] = useState(false);
+  const [showPhoneNumberInput, setShowPhoneNumberInput] = useState(false);
 
   const handleFileChange = async (e) => {
+ 
     setResult(null);
     setUploading(true);
     const file = e.target.files[0];
@@ -25,6 +30,7 @@ const Upload = () => {
         await uploadBytes(storageRef, file);
         const imageUrl = await getDownloadURL(storageRef);
         setImageURL(imageUrl);
+        console.log(imageUrl);
       } catch (error) {
         console.error("Error uploading image:", error);
       } finally {
@@ -51,7 +57,7 @@ const Upload = () => {
             },
           }
         );
-
+        console.log(response.data.result);
         const diseaseSuggestions =
           response.data?.result?.disease?.suggestions || [];
         const cropSuggestions = response.data?.result?.crop?.suggestions || [];
@@ -72,6 +78,15 @@ const Upload = () => {
             "No prevention available",
         }));
 
+        let status = "Infected";
+        if (
+          diseases[0]?.name.toLowerCase() === "healthy" ||
+          (diseases[1]?.name.toLowerCase() === "healthy" &&
+            parseFloat(diseases[1].probability) > 10)
+        ) {
+          status = "Healthy";
+        }
+
         setResult({
           diseases: diseases,
           plant: cropSuggestions[0]?.name || "Unknown plant",
@@ -79,9 +94,12 @@ const Upload = () => {
             name: suggestion.name || "Unknown plant",
             probability: (suggestion.probability * 100).toFixed(2) + "%",
           })),
-          status: diseases.length > 0 ? "Infected" : "Healthy",
+          status: status,
         });
       } catch (error) {
+        if (error.response && error.response.status === 429) {
+          alert("You have reached the maximum number of requests. Please try again later.");
+        }
         console.error("Error diagnosing image:", error);
       } finally {
         setDiagnosing(false);
@@ -93,16 +111,16 @@ const Upload = () => {
   const downloadReport = async () => {
     const doc = new jsPDF();
     doc.setFontSize(16);
-    
+
     // Title
     doc.text("Crop / Plant Health Report", 20, 20);
     doc.setFontSize(12);
-  
+
     // Status
     doc.text(`Status: ${result.status}`, 20, 30);
     // Plant
     doc.text(`Plant: ${result.plant}`, 20, 40);
-    
+
     // Possible Plants
     doc.text("Possible Plants:", 20, 50);
     let yOffset = 60;
@@ -110,11 +128,11 @@ const Upload = () => {
       doc.text(`- ${sug.name} (${sug.probability})`, 20, yOffset);
       yOffset += 10;
     });
-    
+
     // Possible Diseases & Recommendations
     doc.text("Possible Diseases & Recommendations:", 20, yOffset);
     yOffset += 10;
-  
+
     result.diseases.forEach((disease, index) => {
       doc.text(`Disease ${index + 1}:`, 20, yOffset);
       yOffset += 10;
@@ -131,7 +149,7 @@ const Upload = () => {
       doc.text(`Learn more: ${getTipsUrl(disease.name)}`, 20, yOffset);
       yOffset += 20; // Add extra space between diseases
     });
-  
+
     // Save the PDF
     doc.save("diagnosis-report.pdf");
   };
@@ -140,7 +158,76 @@ const Upload = () => {
       ? "https://www.apsnet.org/edcenter/disimpactmngmnt/topc/EpidemiologyTemporal/Pages/ManagementStrategies.aspx"
       : "https://www.elitetreecare.com/2021/02/maintaining-plant-health-tips/";
   };
+  const generateReportText = () => {
+    let reportText = "Crop / Plant Health Report\n\n";
+    reportText += `Status: ${result.status}\n`;
+    reportText += `Plant: ${result.plant}\n\n`;
 
+    reportText += "Possible Plants:\n";
+    result.suggestions.forEach((sug) => {
+      reportText += `- ${sug.name} (${sug.probability})\n`;
+    });
+
+    reportText += "\nPossible Diseases & Recommendations:\n";
+    if (result.status === "Infected") {
+      result.diseases.forEach((disease, index) => {
+        reportText += `\nDisease ${index + 1}:\n`;
+        reportText += `Name: ${disease.name}\n`;
+        reportText += `Scientific Name: ${disease.scientificName}\n`;
+        reportText += `Probability: ${disease.probability}\n`;
+        reportText += `Treatment: ${disease.treatment}\n`;
+        reportText += `Prevention: ${disease.prevention}\n`;
+        reportText += `Learn more: ${getTipsUrl(disease.name)}\n`;
+      });
+    }
+
+    return reportText;
+  };
+
+  const sendReportViaSMS = async () => {
+    if (!validatePhoneNumber(phoneNumber)) {
+      alert(
+        "Invalid phone number. Please enter a valid Nigerian phone number."
+      );
+      return;
+    }
+
+    const formattedNumber = formatPhoneNumber(phoneNumber);
+    setSendingSMS(true);
+
+    try {
+      const reportText = generateReportText(); // Generate the report as plain text
+      const response = await axios.post("http://localhost:3000/send-sms", {
+        to: formattedNumber,
+        message: reportText,
+      });
+
+      if (response.data.status === "success") {
+        alert("Report sent successfully!");
+        setPhoneNumber("");
+        setShowPhoneNumberInput(false);
+      } else {
+        alert("Failed to send report. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error sending SMS:", error);
+      alert("Error sending SMS: " + error.message);
+    } finally {
+      setSendingSMS(false);
+    }
+  };
+
+  const validatePhoneNumber = (number) => {
+    const regex = /^(?:\+234|0)(?:7|8|9)[0-9]{9}$/;
+    return regex.test(number);
+  };
+
+  const formatPhoneNumber = (number) => {
+    if (number.startsWith("0")) {
+      return "+234" + number.slice(1);
+    }
+    return number;
+  };
   return (
     <section className="md:w-[80%] font-mulish w-[90%] mx-auto my-20 rounded-sm shadow-lg bg-white">
       <div className="relative">
@@ -231,7 +318,7 @@ const Upload = () => {
               </p>
               {result.status === "Infected" && (
                 <div className="grid grid-cols-1 md:grid-cols-2 my-3 gap-4">
-                  {result.diseases.slice(0,4).map((disease, index) => (
+                  {result.diseases.slice(0, 4).map((disease, index) => (
                     <div
                       key={index}
                       className="space-y-2 border p-3 rounded-lg shadow-sm"
@@ -241,29 +328,64 @@ const Upload = () => {
                       <small className="block">
                         Scientific Name: {disease.scientificName}
                       </small>
-                      <small className="block">Probability: {disease.probability}</small>
-                      <small className="block">Treatment: {disease.treatment}</small>
-                      <small className="block">Prevention: {disease.prevention}</small>
+                      <small className="block">
+                        Probability: {disease.probability}
+                      </small>
+                      <small className="block">
+                        Treatment: {disease.treatment}
+                      </small>
+                      <small className="block">
+                        Prevention: {disease.prevention}
+                      </small>
                       <a
-                        href={getTipsUrl(disease.name)}
+                        href={disease.learnMore}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-primary underline"
                       >
                         Learn more
                       </a>
+                      
                     </div>
                   ))}
                 </div>
               )}
             </li>
           </ol>
-          <button
-            onClick={downloadReport}
-            className="font-roboto rounded-lg w-full text-white px-10 py-3 bg-primary"
-          >
-            Download Report
-          </button>
+          <div className="space-y-5 my-10 ">
+            <button
+              onClick={downloadReport}
+              className="font-roboto rounded-lg w-full text-white px-10 py-3 bg-primary"
+            >
+              Download Report
+            </button>
+
+            <button
+              onClick={() => setShowPhoneNumberInput(true)}
+              className="font-roboto rounded-lg w-full text-primary px-10 py-3 border border-primary"
+            >
+              Send Diagnosis Report via SMS
+            </button>
+          </div>
+
+          {showPhoneNumberInput && (
+            <div className="mt-5">
+              <input
+                type="text"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="Enter phone number"
+                className="border p-2 rounded-md w-full"
+              />
+              <button
+                onClick={sendReportViaSMS}
+                className="font-roboto rounded-lg w-full mt-3 text-white px-10 py-3 bg-primary"
+                disabled={sendingSMS}
+              >
+                {sendingSMS ? "Sending..." : "Send Report"}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </section>
